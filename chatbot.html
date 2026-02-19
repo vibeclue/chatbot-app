@@ -21,7 +21,9 @@
           setInputText(event.target.value)
         }
 
-        function sendMessage() {
+        async function sendMessage() {
+          setInputText('')
+
           if (inputText) {
             const newChatMessages = [
               ...chatMessages,
@@ -34,25 +36,35 @@
 
             setChatMessages(newChatMessages);
 
-            setTimeout(() => {
-              const response = Chatbot.getResponse(inputText);
-              setChatMessages([
-                ...newChatMessages,
-                {
-                  message: response,
-                  sender: 'robot',
-                  id: crypto.randomUUID()
-                }
-              ]);
-            }, 500)
+            // const text = inputText;
+            // setInputText('');
 
-            setInputText('');
+            setChatMessages([
+              ...newChatMessages,
+              {
+                message: 'Loading...',
+                sender: 'robot',
+                id: crypto.randomUUID()
+              }
+            ]);
+
+            const response = await Chatbot.getResponseAsync(inputText);
+            setChatMessages([
+              ...newChatMessages,
+              {
+                message: response,
+                sender: 'robot',
+                id: crypto.randomUUID()
+              }
+            ]);
           }
         }
 
         function handleKeyDown(event) {
           if(event.key === 'Enter') {
             sendMessage();
+          } else if (event.key === 'Escape') {
+            setInputText('');
           }
         }
 
